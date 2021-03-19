@@ -25,7 +25,7 @@ description: >- # this means to ignore newlines until "baseurl:"
   Pentesting, hacking, cybersecurity, physical security, video games, communication skills, 
   rants, and anything else that is deemed interesting.
 baseurl: "/blog" # the subpath of your site, e.g. /blog
-url: "https://notbo.red" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://www.notbo.red" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: @x_a_n_d_e_r_k
 github_username:  x-a-n-d-e-r-k
 
