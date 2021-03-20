@@ -30,9 +30,8 @@ twitter_username: "@x_a_n_d_e_r_k"
 github_username:  x-a-n-d-e-r-k
 
 # Build settings
-remote_theme: minimal-mistakes-jekyll
+remote_theme: "mmistakes/minimal-mistakes@4.22.0"
 plugins:
-  - jekyll-feed
   - jekyll-include-cache
 
 # Exclude from processing.
