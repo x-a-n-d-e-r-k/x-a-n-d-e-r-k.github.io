@@ -6,8 +6,6 @@ categories: appsec software dotnet
 author: XanderK
 ---
 
-# Easy Steps to Securing Your Web Application
-
 A developer's guide for ASP.NET and ASP.NET Core
 
 Frequently, performing some very simple steps can greatly increase an application's security posture. From stopping your web server from leaking information to an attacker, to adding additional security headers to your application, this guide will explain the basic steps that will stop most attacks before they start.

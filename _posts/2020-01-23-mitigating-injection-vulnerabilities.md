@@ -6,8 +6,6 @@ categories: appsec software injection XSS SQLi
 author: XanderK
 ---
 
-# Mitigating Injection Vulnerabilities
-
 ## What is an Injection Vulnerability?
 Any vulnerability allowing an attacker to “inject” content into code, HTML, database queries, etc. is considered an injection vulnerability. The two exploits of injection vulnerabilities that will be covered here are Cross-Site Scripting (XSS) and SQL Injection (SQLi). XSS injects script content into the HTML to be rendered by the browser and SQLi injects content into a database query to modify the behavior of the query executed by the database engine.
 

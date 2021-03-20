@@ -6,7 +6,6 @@ categories: appsec software
 author: XanderK
 ---
 
-# Introduction to Application Security
 Writing custom applications involves taking responsibility for a security boundary into your organization. This means that you need to know how to mitigate and prevent common security problems found in software.
 
 Most security concerns are part of a few very general concepts. First, never trust user provided data. Always consider that data to be potentially harmful and sanitize it before using it. Second, encrypt any and all sensitive data, both on disk and in communication with another process or system. Third, always keep your software up to date with latest framework patches, dependency versions, and on a supported operating system. 
