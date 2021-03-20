@@ -2,7 +2,8 @@
 layout: single
 title:  "Introduction to Application Security"
 date:   2020-01-23 10:28:04 -0500
-categories: appsec software
+categories: appsec
+tags: appsec
 author: XanderK
 ---
 
