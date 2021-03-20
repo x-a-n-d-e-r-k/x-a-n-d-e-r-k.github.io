@@ -44,6 +44,9 @@ defaults:
       type: posts
     values: 
       show_date: true
+      toc: true
+      toc_label: "Table-o-Contents"
+      toc_icon: "cog"
 
 
 # Exclude from processing.
