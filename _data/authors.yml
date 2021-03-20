@@ -1,0 +1,14 @@
+XanderK:
+  name  : "XanderK"
+  bio   : "After a 23 year career in application development, architecture, and management, I transitioned into cybersecurity. I built an Application Security program, led an Identity Management program, and now am a professional penetration tester."
+  avatar: "/assets/images/bio-photo-xanderk.jpg"
+  links : 
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:xanderk@notbo.red"
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://www.notbo.red"
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/x_a_n_d_e_r_k"
