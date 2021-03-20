@@ -1,6 +1,8 @@
 ---
-layout: default
+layout: single
 title: About
+author_profile: true
+author: XanderK
 permalink: /about/
 ---
 
