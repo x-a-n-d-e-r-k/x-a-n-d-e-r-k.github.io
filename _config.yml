@@ -18,13 +18,13 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: "NotBored!"
+title: "Not Bored!"
 email: xanderk@nobo.red
 description: >- # this means to ignore newlines until "baseurl:"
   A blog containing the ADD ramblings of someone who is never bored. Topics include
   Pentesting, hacking, cybersecurity, physical security, video games, communication skills, 
   rants, and anything else that is deemed interesting.
-baseurl: "/blog" # the subpath of your site, e.g. /blog
+baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.notbo.red" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: "@x_a_n_d_e_r_k"
 github_username:  x-a-n-d-e-r-k
