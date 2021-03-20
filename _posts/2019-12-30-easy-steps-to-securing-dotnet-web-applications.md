@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: single
 title:  "Easy Steps to Security DotNet Web Applications"
 date:   2019-12-30 12:00:00 -0500
 categories: appsec software dotnet 

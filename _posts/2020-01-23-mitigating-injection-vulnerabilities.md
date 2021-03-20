@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: single
 title:  "Mitigating Injection Vulnerabilities"
 date:   2020-01-23 12:00:00 -0500
 categories: appsec software injection XSS SQLi 

@@ -27,14 +27,25 @@ description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://www.notbo.red" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: "@x_a_n_d_e_r_k"
+repository: "x-a-n-d-e-r-k/x-a-n-d-e-r-k.github.io"
 github_username:  x-a-n-d-e-r-k
 github: [metadata]
 
 # Build settings
-remote_theme: "mmistakes/minimal-mistakes@4.22.0"
+theme: "minimal-mistakes-jekyll"
+minimal_mistakes_skin: "dark"
 plugins:
   - jekyll-include-cache
 
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values: 
+      show_date: true
+
+      
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to

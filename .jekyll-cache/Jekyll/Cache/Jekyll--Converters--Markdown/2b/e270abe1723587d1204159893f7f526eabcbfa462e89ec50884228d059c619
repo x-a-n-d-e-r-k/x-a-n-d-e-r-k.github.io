@@ -1,0 +1,377 @@
+I")_<h1 id="easy-steps-to-securing-your-web-application">Easy Steps to Securing Your Web Application</h1>
+
+<p>A developer’s guide for ASP.NET and ASP.NET Core</p>
+
+<p>Frequently, performing some very simple steps can greatly increase an application’s security posture. From stopping your web server from leaking information to an attacker, to adding additional security headers to your application, this guide will explain the basic steps that will stop most attacks before they start.</p>
+
+<h2 id="cleaning-up-web-server-headers">Cleaning up web server headers</h2>
+
+<p>The first step to hardening web applications built on the .NET platform is stopping the web server from providing the four standard headers ASP.NET populates in every response. These headers, with various values, are found in every default ASP.NET web project:</p>
+
+<ul>
+  <li><strong>Server</strong> : Microsoft-IIS/10.0</li>
+  <li><strong>X-AspNet-Version</strong> : 4.0.30319</li>
+  <li><strong>X-AspNetMvc-Version</strong> : 4.0</li>
+  <li><strong>X-Powered-By</strong> : ASP.NET</li>
+</ul>
+
+<p>You might read that and ask, “why do these headers matter?” These headers give a potential attacker information about the platform serving the web application. This includes what version of IIS and Windows, what .NET framework version, and what version of MVC. This is valuable information and allows an attacker to employ tailored strategies to target a smaller set of potential vulnerabilities based on the information provided.</p>
+
+<p>Removing these headers is very easy and forces the attacker to target a wider range of potential vulnerabilities, thus slowing them down.</p>
+
+<h3 id="server">Server</h3>
+
+<p>The <em>Server</em> header identifies what web server is serving the content for this request and is set by the webserver or reverse proxy directly. This should be removed from all responses. For IIS, this can be done either via code or the web.config.</p>
+
+<p>In ASP.NET Framework, this can be done via the HttpApplication class implemented in your project. By default, this if found in the <em>Global.asax.cs</em> file. Simply remove the “Server” header from the response in the <em>Application_BeginRequest()</em> method.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void Application_BeginRequest() {  
+    Response.Headers.Remove("Server");  
+}  
+</code></pre></div></div>
+
+<p>Alternatively, in IIS 10.0 and above, you can control this via the web.config by adding the following setting.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.webServer&gt;  
+  &lt;security&gt;  
+    &lt;requestFiltering removeServerHeader="true"/&gt;  
+  &lt;/security&gt;  
+&lt;/system.webServer&gt;  
+</code></pre></div></div>
+
+<p>In ASP.NET Core, Kestrel must be instructed to not add the <em>Server</em> header. This is done in the <em>CreateDefaultBuilder</em> call usually found in <em>program.cs__.</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>WebHost.CreateDefaultBuilder(args)  
+       .UseKestrel(c =&gt; c.AddServerHeader = false)  
+       .UseStartup&lt;Startup&gt;()  
+       .Build();  
+</code></pre></div></div>
+
+<p>This only removes the HTTP header from Kestrel. If you are hosting Kestrel from within IIS, the header will likely still be added by IIS. If this is the case, you will still need make the above web.config change. If Kestrel is running on anything else, like Nginx, the web.config will not be necessary.</p>
+
+<h3 id="x-aspnet-version">X-AspNet-Version</h3>
+
+<p>The <em>X-AspNet-Version</em> header identifies the version of the .NET Framework running the ASP.NET application and is added by the framework itself, but only in ASP.NET Framework. It is simple to remove by adding the following to your web.config.</p>
+
+<p><strong>Note:</strong>  <strong>ASP.NET Core does not add this header.</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;httpRuntime targetFramework="4.7.2" **enableVersionHeader="false"** /&gt;  
+&lt;/system.web&gt;  
+</code></pre></div></div>
+
+<h3 id="x-aspnetmvc-version">X-AspNetMvc-Version</h3>
+
+<p>Like the <em>X-AspNet-Version</em> header, the <em>X-AspNetMvc-Version</em> header identifies the version of MVC running on the web application. This header requires us to edit the HttpApplication class to remove. Like above, by default, this if found in the <em>Global.asax.cs</em> file. In the <em>Application_Start()</em> method we must instruct MVC to disable the header.</p>
+
+<p><strong>Note:</strong>  <strong>ASP.NET Core does not add this header.</strong></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>protected void Application_Start() {  
+    // initialization code  
+    MvcHandler.DisableMvcResponseHeader = true;  
+}  
+</code></pre></div></div>
+
+<h3 id="x-powered-by">X-Powered-By</h3>
+
+<p><em>X-Powered-By</em> introduces us to an element in the web.config file with which many people aren’t familiar. The <em>httpProtocol</em> element contains a child element for <em>customHeaders</em>. Here, we can add our own headers (which we will be doing later) and remove existing headers in the response. If the application is being hosted by IIS, either directly or via Kestrel, remove the <em>X-Powered-By</em> header by adding this to the web.config:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.webServer&gt;  
+  &lt;httpProtocol&gt;  
+    &lt;customHeaders&gt;  
+      &lt;remove name="X-Powered-By"/&gt;  
+    &lt;/customHeaders&gt;  
+  &lt;/httpProtocol&gt;  
+&lt;/system.webServer&gt;  
+</code></pre></div></div>
+
+<p>If the <em>X-Powered-By</em> header is being added in an ASP.NET Core application, it is either because it is being hosted by IIS or due to a framework being used within the application. If the application is hosted by IIS, follow the instructions above for modifications to the web.config. Otherwise, it is likely do to another framework dependency and will need to be removed via middleware. Kestrel and ASP.NET Core do not use this header directly.</p>
+
+<h2 id="cleaning-up-your-development-settings">Cleaning up your development settings</h2>
+
+<p>Another source of valuable information to an attacker is in the form of settings used during development that aren’t properly turned off or removed when deployed. In an application that is hosted by IIS, the web.config needs to be adjusted before deployment to a public target. This is frequently accomplished through a <em>transform</em>. These are some important transform elements to include in your Web.Release.config file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;compilation xdt:Transform="RemoveAttributes(debug)" /&gt;  
+  &lt;customErrors xdt:Transform="SetAttributes(mode)" mode="On" /&gt;  
+  &lt;trace xdt:Transform="InsertIfMissing"/&gt;  
+  &lt;trace xdt:Transform="Remove"/&gt;  
+&lt;/system.web&gt;  
+
+&lt;system.webServer&gt;  
+  &lt;handlers xdt:Transform="InsertIfMissing" xdt:SupressWarnings="true"&gt;  
+    &lt;remove xdt:Transform="InsertIfMissing" name="TraceHandler-Integrated"/&gt;  
+    &lt;remove xdt:Transform="InsertIfMissing" name="TraceHandler-Integrated-4.0"/&gt;  
+  &lt;/handlers&gt;  
+&lt;/system.webServer&gt;  
+</code></pre></div></div>
+
+<p>This will ensure <em>debug</em> mode is turned off for the application as well as turning on <em>customErrors</em> to prevent leaking of information through error pages.</p>
+
+<h2 id="add-security-headers">Add security headers</h2>
+
+<p>Once the information leak has been plugged, it’s time to start adding headers which control the allowed behaviors for browsers. This includes considerations like XSS protection, iFrame behaviors, where content is allowed to be loaded from and how it’s able to behave, and others. All these behaviors can be dictated by headers sent by the application and obeyed by the major web browsers.</p>
+
+<p>These headers are not a substitution for secure coding practices but are the front line in a layered defense.</p>
+
+<ul>
+  <li><strong>Content-Security-Policy</strong></li>
+  <li><strong>X-Frame-Options</strong></li>
+  <li><strong>X-XSS-Protection</strong></li>
+  <li><strong>Referrer-Policy</strong></li>
+  <li><strong>X-Content-Type-Options</strong></li>
+</ul>
+
+<p>These headers are set in the system.webServer�httpProtocol�customHeaders section of the web.config.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.webServer&gt;  
+  &lt;httpProtocol&gt;  
+    &lt;customHeaders&gt;  
+      &lt;add name="Content-Security-Policy"  
+           value="default-src 'self' https://intlcdn.net http://intlcdn.net;  
+           script-src 'self' https://intlcdn.net http://intlcdn.net;  
+           style-src 'self' https://intlcdn.net http://intlcdn.net;  
+           img-src 'self' https://intlcdn.net http://intlcdn.net"/&gt;  
+      &lt;add name="X-Frame-Options" value="DENY"&gt;  
+      &lt;add name="X-XSS-Protection" value="1; mode=block" /&gt;  
+      &lt;add name="Referrer-Policy" value="no-referrer" /&gt;  
+      &lt;add name="X-Content-Type-Options", "nosniff" /&gt;  
+    &lt;/customHeaders&gt;  
+  &lt;/httpProtocol&gt;  
+&lt;/system.webServer&gt;  
+</code></pre></div></div>
+
+<p>Alternatively, in the case of an ASP.NET Core application, these can be set using middleware.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>app.Use(async (context, next) =&gt; {  
+    context.Response.Headers.Add("Content-Security-Policy",  
+      "default-src 'self' https://intlcdn.net http://intlcdn.net; " +  
+      "script-src 'self' https://intlcdn.net http://intlcdn.net; " +  
+      "style-src 'self' https://intlcdn.net http://intlcdn.net; " +  
+      "img-src 'self' https://intlcdn.net http://intlcdn.net;" +  
+    );  
+  
+    context.Response.Headers.Add("X-Frame-Options", "deny");  
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");  
+    context.Response.Headers.Add("Referrer-Policy", "no-referrer");  
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");  
+    await next();  
+});  
+</code></pre></div></div>
+
+<h3 id="content-security-policy">Content-Security-Policy</h3>
+
+<p><em>Content-Security-Policy</em> is a very extensive header that can have several different directives applied to it. Each directive includes the directive name followed by a space delimited list of values and terminated with a semicolon.</p>
+
+<p>The example above shows four separate categories being set and allowing sources from ‘self’ (the web application itself), http://intlcdn.net and https://intlcdn.net. There are a large number of options that can be set with <em>Content-Security-Policy</em> and following the most restrictive settings the application can support.</p>
+
+<p>Determining what settings to include can be daunting, but <em>-report-only</em> can be appended to the header to test your settings. Violations will appear in the Developer Tools Console for areas on the site that would have been blocked if in enforcement mode. This can also be used with a <em>report-uri</em> directive to direct all violations to an endpoint that can log them if testing needs to be longer term.</p>
+
+<p>A full reference can be found at <a href="https://content-security-policy.com/">https://content-security-policy.com/</a>.</p>
+
+<h3 id="x-frame-options">X-Frame-Options</h3>
+
+<p>Browsers support the ability to display one webpage inside another by using iframes. The <em>X-Frame-Options</em> header allows an application to tell the browser what iframe behavior it will allow. Options include:</p>
+
+<ul>
+  <li><strong>deny</strong>  never allow this content to be displayed in an iframe</li>
+  <li><strong>sameorigin</strong>  only allow this content to be displayed in an iframe of another page on the same origin as the content being presented.</li>
+  <li><strong>allow-from uri</strong>  allow this content to be displayed in an iframe only on the specified uri.</li>
+</ul>
+
+<p>Without specifying this header, another site can create an iframe of specific dimensions and transparency to trick a user to click on a button on another site. This is called <em>clickjacking</em>.</p>
+
+<h3 id="x-xss-protection">X-XSS-Protection</h3>
+
+<p>Cross-site scripting or XSS is a type of injection attack that utilizes malicious scripts to cause a website to act outside of its normal behavior. The <em>Content-Security-Policy</em> header will prevent most XSS attacks if ‘unsafe-inline’ is not included. However, for older browsers, <em>X-XSS-Protection</em> serves as the mechanism to instruct the browser what to do when an XSS attack is detected. Options include:</p>
+
+<ul>
+  <li><strong>0</strong>  Disables XSS filtering</li>
+  <li><strong>1</strong>  Enables XSS filtering and if an attack is detected, the browser will sanitize the page</li>
+  <li><strong>1; mode=block</strong>  Enables XSS filtering and if an attack is detected, the browser will prevent the rendering of the page</li>
+  <li><strong>1; report=</strong>** uri**  Only available in Chromium, Enables XSS filtering and if an attack is detected, the browser will sanitize the page and report the violation</li>
+</ul>
+
+<h3 id="referrer-policy">Referrer-Policy</h3>
+
+<p>The <em>referer</em> header (purposely misspelled) provides the information of what site the browser was on when the request was made. This can result in privacy violations by providing too much information to the server and thus captured by any agent between the browser and server. To avoid this, the <em>Referrer-Policy</em> (spelled correctly) is provided with one of the following directives:</p>
+
+<ul>
+  <li><strong>no-referrer</strong> The referer header will be omitted entirely.</li>
+  <li><strong>no-referrer-when-downgrade</strong> - The URL is sent as a referrer when the protocol security level is the same, but is omitted when sending to a less secure destination</li>
+  <li><strong>origin</strong> - Only send the origin as the referrer in all cases.</li>
+  <li><strong>origin-when-cross-origin</strong> - Send a full URL when performing a same-origin request, but only send the origin of the document for other cases.</li>
+  <li><strong>same-origin</strong> - A referrer will be sent for same-site origins, but cross-origin requests will contain no referrer information.</li>
+  <li><strong>strict-origin</strong>  The origin is sent as a referrer when the protocol security level stays the same, but is omitted when sending to a less secure destination</li>
+  <li><strong>strict-origin-when-cross-origin</strong>  The URL is sent when performing a same-origin request, when the protocol security level stays the same, but omitted when sending to a less secure destination</li>
+  <li><strong>unsafe-url</strong> - Send a full URL when performing a same-origin or cross-origin request.</li>
+</ul>
+
+<h3 id="x-content-type-options">X-Content-Type-Options</h3>
+
+<p>Browsers have the ability to provide a “best guess” at MIME type in the case where the <em>content-type</em> header is missing, or the browser detects it could be incorrect. This is called MIME type sniffing and can lead to browsers transform non-executable MIME types into executable MIME types. This should always be set to <em>nosniff</em>. This helps prevent script files from being marked as sources for IMG tags and thus being executed on load.</p>
+
+<h3 id="strict-transport-security">Strict-Transport-Security</h3>
+
+<p>HTTP Strict Transport Security tells a browser to register this site as only ever being available over HTTPS. When a response includes this header, the browser registers this site internally and any request to HTTP for this site is immediately replaced with HTTPS for a time period determined by the <em>max-age</em> directive. This helps mitigate man-in-the-middle attacks.</p>
+
+<p>In ASP.NET hosted on IIS add the following custom header in the web.config:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.webServer&gt;  
+  &lt;httpProtocol&gt;  
+    &lt;customHeaders&gt;  
+      &lt;add name="Strict-Transport-Security", "max-age=31536000" /&gt;  
+    &lt;/customHeaders&gt;  
+  &lt;/httpProtocol&gt;  
+&lt;/system.webServer&gt;  
+</code></pre></div></div>
+
+<p>In ASP.NET Core there is a built-in middleware that can be called using the following:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>app.UseHsts();  
+</code></pre></div></div>
+
+<h2 id="sessions-cookies-and-default-documents">Sessions, Cookies, and Default Documents</h2>
+
+<h3 id="sliding-expiration">Sliding Expiration</h3>
+
+<p><em>Sliding expiration</em> is a setting which instructs the framework to issue a new cookie with a new expiration any time a request is processed which is more than halfway through the expiration window.</p>
+
+<p>If this is set to <em>true</em>, it is conceivable to never have to re-authenticate a user. If the user’s cookie, browser, or computer were to be compromised this would allow an attacker to never have to know the user’s credentials and remain able to act on behalf of the user.</p>
+
+<p>In ASP.NET this is controlled on the <em>Authentication-&gt;Forms</em> element in the <em>web.config</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;authentication mode="Forms"&gt;  
+    &lt;forms defaultUrl="~/"  
+           loginUrl="~/openid"  
+           name="cookieName"  
+           cookieless="UseCookies"  
+           slidingExpiration="false"/&gt;  
+  &lt;/authentication&gt;  
+&lt;/system.web&gt;  
+</code></pre></div></div>
+
+<p>In ASP.NET Core, this is achieved by setting the <em>SlidingExpiration__property</em> on the Authentication.Cookies object.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)  
+    .AddCookie(options =&gt; {  
+    Options.SlidingExpiration = false;  
+});  
+</code></pre></div></div>
+
+<p>This setting should always be set to <em>false</em>.</p>
+
+<h3 id="httponly-cookies">HttpOnly Cookies</h3>
+
+<p>If not specified otherwise, all cookies on a site are able to be accessed by JavaScript running on a page from the same domain. This allows any attacker to inject custom JavaScript and read the cookies passed between browser and server. These cookies often contain sensitive data and should not be able to be read. To prevent this from being possible, setting called <em>httpOnly</em> needs to be set.</p>
+
+<p>In ASP.NET, this is done in the <em>web.config</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;httpCookies httpOnlyCookies="true"/&gt;  
+&lt;/system.web&gt;  
+</code></pre></div></div>
+
+<p>In ASP.NET Core, if cookie authentication is used, this is done by default.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>app.UseCookieAuthentication();  
+</code></pre></div></div>
+
+<p>Or, if you wish to set a cookie manually, you can do that as middleware.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>app.Use((context, next) =&gt; {  
+    context.Response.Cookies.Append(  
+        "CookieKey",  
+        "CookieValue",  
+        new CookieOptions {  
+            HttpOnly = true  
+        });  
+    await next();  
+});  
+</code></pre></div></div>
+
+<h3 id="sessionstate-cookie">SessionState Cookie</h3>
+
+<p>Any time an application requires the ability to track a user across multiple requests, session state is used. This will create a unique session id and store it in a cookie. By default, this cookie is called <em>ASP.NET_SessionId</em>. This makes it trivial to determine that the site is running ASP.NET. This is one more piece of information that should be hidden from any potential attacker.</p>
+
+<p>In ASP.NET this can be changed in the <em>web.config</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;sessionState cookieName="s" cookieless="UseCookies" /&gt;  
+&lt;/system.web&gt;  
+</code></pre></div></div>
+
+<p>In ASP.NET Core, this can be changed in the <em>Startup</em> class.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void ConfigureServices(IServiceCollection services) {  
+    services.AddSession(options =&gt; {  
+        options.Cookie.HttpOnly = true;  
+        options.Cookie.IsEssential = true;  
+        options.Cookie.Name = "s";  
+    });  
+}  
+
+public void Configure(IApplicationBuilder app, IHostingEnvironment env) {  
+    app.UseSession();  
+}  
+</code></pre></div></div>
+
+<p>If it is unnecessary for your application to track a user across multiple requests, it’s best to completely disable session state tracking. In ASP.NET Core, session state is turned off by default, but in ASP.NET it can be turned off in the <em>web.config</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;sessionState mode="Off"/&gt;  
+&lt;/system.web&gt;  
+</code></pre></div></div>
+
+<h3 id="antiforgery-cookie">AntiForgery Cookie</h3>
+
+<p>Anti-forgery is a mechanism that helps mitigate the risk of <em>cross-site request forgery.</em> By writing a unique value to a cookie and the same value to a form element, the server-side code can validate that the values match and confirm that the request hasn’t been forged by another site. By default, the antiforgery cookie is named <em>AntiForgeryToken</em> in ASP.NET Framework and <em>.AspNetCore.Antiforgery.</em> <strong>xxxxxxx</strong> in ASP.NET Core. Leaving these to be the default values would allow potential attackers to determine the site is running ASP.NET. This should be hidden from an attacker.</p>
+
+<p>In ASP.NET this can be changed in the <em>web.config</em>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.web&gt;  
+  &lt;sessionState cookieName="s" cookieless="UseCookies" /&gt;  
+&lt;/system.web&gt;  
+</code></pre></div></div>
+
+<p>In ASP.NET Core, this can be changed in the <em>Startup</em> class.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public void ConfigureServices(IServiceCollection services) {  
+    services.AddSession(options =&gt; {  
+        options.Cookie.HttpOnly = true;  
+        options.Cookie.IsEssential = true;  
+        options.Cookie.Name = "s";  
+    });  
+}  
+  
+public void Configure(IApplicationBuilder app, IHostingEnvironment env) {  
+    app.UseSession();  
+}  
+</code></pre></div></div>
+
+<h3 id="default-documents">Default Documents</h3>
+
+<p>ASP.NET has a list of documents that are served, in a priority order, if no other route is provided. Examples of these files are:</p>
+
+<ul>
+  <li>default.htm</li>
+  <li>default.asp</li>
+  <li>default.aspx</li>
+  <li>default.html</li>
+  <li>index.htm</li>
+  <li>index.html</li>
+  <li>iisstart.htm</li>
+</ul>
+
+<p>Generally speaking, if the application has the proper routes set up, default documents are unnecessary. If default documents are enabled, they can provide an opportunity for an attacker to take over a part of a site.</p>
+
+<p>ASP.NET Core does not have default document handling turned on by default.</p>
+
+<p>To turn off default documents in ASP.NET is a simple change to the <em>web.config</em> file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;system.webServer&gt;  
+  &lt;defaultDocument enabled="false"/&gt;  
+&lt;/system.webServer&gt;  
+</code></pre></div></div>
+:ET
