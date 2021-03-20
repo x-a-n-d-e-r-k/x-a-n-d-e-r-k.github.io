@@ -18,7 +18,8 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: "Not Bored!"
+title: "Not Bored"
+subtitle: "Random thoughts you never asked for!"
 email: xanderk@nobo.red
 description: >- # this means to ignore newlines until "baseurl:"
   A blog containing the ADD ramblings of someone who is never bored. Topics include
@@ -30,12 +31,27 @@ twitter_username: "@x_a_n_d_e_r_k"
 repository: "x-a-n-d-e-r-k/x-a-n-d-e-r-k.github.io"
 github_username:  x-a-n-d-e-r-k
 github: [metadata]
+search: true
+nav: main
 
 # Build settings
 remote_theme: "mmistakes/minimal-mistakes@4.22.0"
 minimal_mistakes_skin: "dark"
 plugins:
   - jekyll-include-cache
+
+
+footer:
+  links:
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/x_a_n_d_e_r_k"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/x-a-n-d-e-r-k"
+    - label: "Keybase"
+      icon: "fab fa-fw fa-keybase"
+      url: "https://keybase.io/xanderk"
 
 defaults:
   # _posts
@@ -47,8 +63,47 @@ defaults:
       toc: true
       toc_label: "Table-o-Contents"
       toc_icon: "cog"
+      author_profile: true
+      share: true
+      tags: true
+  # _pages
+  - scope: 
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+  # _portfolio
+  - scope:
+      path: ""
+      type: portfolio
+    values:
+      layout: single
+      author_profile: false
+      share: true
 
+collections:
+  appsec:
+    output: true
+    permalink: /:collection/:path/
+  pentesting:
+    output: true
+    permalink: /:collection/:path/
+  communication:
+    output: true
+    permalink: /:collection/:path/
+  rant:
+    output: true
+    permalink: /:collection/:path/
 
+category_archive:
+  type: liquid
+  path: /categories/
+tag_archive:
+  type: liquid
+  path: /tags/
+
+include: ["_pages"]
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
@@ -57,14 +112,19 @@ defaults:
 # Excluded items can be processed by explicitly listing the directories or
 # their entries' file path in the `include:` list.
 #
-# exclude:
+exclude:
 #   - .sass-cache/
-#   - .jekyll-cache/
+  - .jekyll-cache/
 #   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
+  - Gemfile
+  - Gemfile.lock
 #   - node_modules/
 #   - vendor/bundle/
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+  - .jekyll-asset-cache
+  - .bundle
+  - .asset-cache
+keep_files:
+  - .git

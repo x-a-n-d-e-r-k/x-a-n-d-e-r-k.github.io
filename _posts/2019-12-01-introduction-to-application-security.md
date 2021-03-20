@@ -1,10 +1,11 @@
 ---
 layout: single
 title:  "Introduction to Application Security"
-date:   2020-01-23 10:28:04 -0500
+date:   2019-12-01 00:00:00 -0500
 categories: appsec
 tags: appsec
 author: XanderK
+published: false
 ---
 
 Writing custom applications involves taking responsibility for a security boundary into your organization. This means that you need to know how to mitigate and prevent common security problems found in software.
