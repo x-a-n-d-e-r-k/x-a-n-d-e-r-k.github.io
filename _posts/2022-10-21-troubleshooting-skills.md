@@ -74,4 +74,4 @@ Checkpoints are very basic troubleshooting mechanisms. In software systems they 
 
 ## Conclusion
 
-Having good troubleshooting skills is both personally empowering and professionally rewarding. Refining these concepts will help you become more proficient at finding the source of problems in almost any system. Skilled individuals can even apply these concepts vicariously through others for systems they know little to nothing about, merely by asking questions of them and pointing them to check the system at various points.
+Having good troubleshooting skills is both personally empowering and professionally rewarding. Refining these concepts will help you become more proficient at finding the source of problems in almost any system. Skilled individuals can even apply these concepts vicariously through others for systems they know little to nothing about, merely by asking questions of them and pointing them to check the system at various points.  
