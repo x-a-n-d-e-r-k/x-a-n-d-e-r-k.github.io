@@ -5,7 +5,7 @@ date:   2022-10-21 00:00:00 -0500
 categories: general
 tags: troubleshooting lifeskills
 author: XanderK
-published: false
+published: true
 ---
 
 ## Troubleshooting is a Skill
