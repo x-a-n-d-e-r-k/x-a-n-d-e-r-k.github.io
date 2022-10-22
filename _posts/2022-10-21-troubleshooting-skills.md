@@ -22,16 +22,14 @@ Below are a few key troubleshooting concepts that the best troubleshooters utili
 
 * Identify Failure Conditions
 * Identify and Remove Assumptions
-* Binary Search
-* Checkpoints
+* Perform a Binary Search
+* Utilize Checkpoints
 
 Including these concepts in your troubleshooting process will dramitically increase the success of identifying and solving problems in just about any technical problem you may encounter. I have used these same concepts in everything from troubleshooting software source code, structured cabling, electrical system, and even automotive engines. Let's go through these one by one and explain what they mean.  
 
 ### Identify Failure Condition(s)
 
-The first step to pretty much every troubleshooting session requires the ability to identify conditions which cause the failure being addressed. In most cases, you can point to a specific set of conditions that consistently result in the negative outcome you are troubleshooting. This is the most preferralbe condition for you, as you can make changes until those conditions no longer result in a failure.  
-
-However, there are situations that you will encounter that the failure condition or conditions are not dependable. In these situations, you can use the same set of conditions over and over and sometimes they will cause a failure and sometimes they won't. The take away in these situations is that the lack of dependability on the failure condition is itself a valuable piece of information. If those conditions aren't dependable then the problem is caused by something that is inconsistent. Examples of that would be:
+First, you have to be able to identify conditions which cause the failure being addressed. In most cases, you can point to a specific set of conditions that consistently result in a negative outcome you are troubleshooting. This is the most preferrable condition for you, as you can make changes until those conditions no longer result in a failure. However, there are situations that you will encounter that the failure condition or conditions are not dependable. In these situations, you can use the same set of conditions over and over and sometimes they will cause a failure and sometimes they won't. The take away in these situations is that the lack of dependability on the failure condition is itself a valuable piece of information. If those conditions aren't dependable then the problem is caused by something that is inconsistent. Examples of that would be:
 
 * Software systems
   * Race conditions - multiple execution threads reading/writing a shared resource in an inconsistent order
@@ -47,11 +45,11 @@ However, there are situations that you will encounter that the failure condition
   * Moisture - moisture can include actual standing water or as simple as high humidity which can encourage corrosion or even create electrical shorts
   * Electrical surges - insufficient grounding and surge protection can cause components to misbehave or even completely fail
 
-These examples show a consistent way of approaching inconsistent failure conditions. The presense of inconsistent conditions itself can point to potential areas to focus your troubleshooting efforts.  
+These examples show a consistent way you can approach inconsistent failure conditions. The presense of inconsistent conditions itself can point to potential areas to focus your troubleshooting efforts.  
 
 ### Identify and Remove Assumptions
 
-Another very important concept is the ability to identify and remove assumptions. This means finding areas of the system where your brain just glosses over as "that's impossible" or "can't be in that area." It's natural for us to think we know what areas are bulletproof and can't possibly be the problem. However, consistently, these areas are where we find the most frustrating and persistent bugs, specifically because they are the most overlooked areas. Examples of that would be:  
+Second is the ability to identify and remove assumptions. This means you need to find the areas of the system where your brain just glosses over as "that's impossible" or "can't be in that area." It's natural for us to think we know what areas are bulletproof and can't possibly be the problem. However, consistently, these areas are where we find the most frustrating and persistent bugs, specifically because they are the most overlooked areas. Examples of that would be:  
 
 * Software systems
   * The tests are all passing so that area of code can't be the problem.
@@ -59,25 +57,48 @@ Another very important concept is the ability to identify and remove assumptions
   * Assuming an error code is being returned properly.
     * Sometimes the problem is caused because the error code returned is not the one expected.
 * Automotive
-  * The car starts so the battery must be fine
-  * The battery dies after a few minutes, it must be a bad battery
-  * There is plenty of fuel so that can't be the problem
+  * The car starts so the battery must be fine.
+    * It is possible that there is enough voltage to start the car, but not enough to run the accessory that is misbehaving.
+  * The car dies after a few minutes, it must be a bad battery.
+    * The battery could be fine, but the alternator could be faulty, thus causing the car to die when there's no more electricity.
+  * There is plenty of fuel so that can't be the problem.
+    * Fuel can go bad. Even if there's no fault in the fuel system, bad fuel can cause failures.
+* Structured cabling
+  * Ethernet switch shows link on both sides, so the cable is good.
+    * Ethernet cables are notoriously hard to diagnose as faulty.
+  * Electrical ground wire is connected so it can't be the ground.
+    * Ground connections can be interrupted by corrosion that can be difficult to see. 
 
-It can be critically important to stop yourself from assuming _any_ part of the system is bulletproof.  
+It can be critically important to stop yourself from assuming _any_ part of the system is bulletproof. Challenge all your assumptions and test things you think couldn't possibly be the problem.  
 
-### Binary Search
+### Perform a Binary Search
 
-Those with experience in information technology may be familiar with the concept of the binary search. The basic premise of the concept is that you start in the middle of the 'system' and evaluate it to see if it's behaving as designed. If it isn't, then the problem is occuring _before_ the current place. If it is, then the problem is occurring _after_ the current place. Repeating this process in exceedingly smaller sections of the system allows you to very quickly narrow down the area where the problem exists.  
+Third is performing a binary search. Those with experience in information technology may be familiar with this. The basic premise of the concept is that you start in the middle of the 'system' and evaluate it to see if it's behaving as designed. If it isn't, then the problem is occuring _before_ the current place. If it is, then the problem is occurring _after_ the current place. Repeating this process in exceedingly smaller sections of the system allows you to very quickly narrow down the area where the problem exists.  
 
 An easy example is in a cabling system such as cable television, network cabling, or electrical power. In all of these systems you have a point that can be identified as a 'start' and an 'end.'  
 
-For example, an outlet in your bathroom no longer has power. If any other location in your house has power, you can consider the _system under test_ to start at the breaker box in your house and end at the bathroom outlet. In this scenario, the breaker box obviously has power because your house has power _somewhere_. You would first identify a location roughly halfway between the breaker box and the bathroom outlet, let's say a junction box in the ceiling. When you test the power in that junction box and find that the junction box has power. Since it has power the problem has to exist between that box and the outlet. The power is wired in series and runs through two other outlets before getting to the outlet that doesn't have power. When you check the outlet in the middle, you see that it has no power. Since it doesn't have power, the first outlet to be the next place to check. When you check the first outlet, you discover it has power. So the problem must exist in the line between the first two outlets or a defect in the second outlet itself.
+Take for example an outlet in your bathroom that no longer has power. If any other location in your house has power, you can consider the _system under test_ to start at the breaker box in your house and end at the bathroom outlet. In this scenario, the breaker box obviously has power because your house has power _somewhere_. You would first identify a location roughly halfway between the breaker box and the bathroom outlet, let's say a junction box in the ceiling. When you test the power in that junction box and find that the junction box has power. Since it has power the problem has to exist between that box and the outlet. The power is wired in series and runs through two other outlets before getting to the outlet that doesn't have power. When you check the outlet in the middle, you see that it has no power. Since it doesn't have power, the first outlet to be the next place to check. When you check the first outlet, you discover it has power. So the problem must exist in the line between the first two outlets or a defect in the second outlet itself.
 
 That's the power of the binary search. It becomes more and more valuable as the size and complexity of a system increases. Being able to quickly discard very large areas of a system as "not the problem" can save you considerable time.
 
-### Checkpoints
+### Utilize Checkpoints
 
-Checkpoints are very basic troubleshooting mechanisms. In software systems they can be represented by breakpoints in a debugger, debugging messages logged to a file, or even messages popping up on the screen. In systems like automotive, cable television or computer networks, it could involve probes that read values at a given point in the system and show real-time readings. No matter what system, checkpoints provide a valuable insight into the state of the system at a given point in time and space.  
+Checkpoints are very basic, but powerful, troubleshooting mechanisms. They are, simply put, locations you choose to "check" for the expected value along the path of the system. A few examples are:
+
+* Software systems
+  * breakpoints in a debugger
+  * debugging messages logged to a file
+  * messages popping up on the screen when a certain point in code is reached
+* Automotive
+  * continuity probes showing an unbroken path between two points
+  * test light that shows whether or not a point in the system has voltage
+  * removing a fuse to test an expected failure
+* Structured cabling
+  * connecting an inline signal meter to measure signal strength at a given point in the system
+  * plugging in an outlet tester to confirm proper wiring
+  * using a toning tool to identify connected wires
+
+No matter what system, checkpoints provide a valuable insight into the state of the system at a given point in time and space.  
 
 ## Conclusion
 
