@@ -83,7 +83,7 @@ That's the power of the binary search. It becomes more and more valuable as the 
 
 ### Utilize Checkpoints
 
-Checkpoints are very basic, but powerful, troubleshooting mechanisms. They are, simply put, locations you choose to "check" for the expected value along the path of the system. A few examples are:
+Finally, utilizing checkpoints is a very basic, but powerful, troubleshooting mechanism. They are, simply put, locations you choose to "check" for the expected value along the path of the system. A few examples are:
 
 * Software systems
   * breakpoints in a debugger
