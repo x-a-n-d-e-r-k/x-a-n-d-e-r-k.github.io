@@ -5,14 +5,12 @@ date:   2022-10-21 00:00:00 -0500
 categories: general
 tags: troubleshooting lifeskills
 author: XanderK
-published: true
+published: false
 ---
 
 ## Troubleshooting is a Skill
 
-Troubleshooting is frequently thought of as an art. I prefer to think of it as part art, part science. This is because although it takes some creativity to be generally good at troubleshooting, most often one can apply a rigorous playbook to troubleshooting and be successful.  
-
-Many people look at troubleshooting the same way they look at solving riddles. You're either good at it or you're not. I disagree. Troubleshooting is a skill that can be learned and practiced. It doesn't require any inate abilities other than challenging your assumptions and getting good a breaking down a system into it's component pieces. By identifying the components that make up a system, you can get better at evaluating how those components interact with one another.  
+Many people look at troubleshooting the same way they look at solving riddles. You're either good at it or you're not. I disagree. Troubleshooting is a skill that can be learned and practiced. It doesn't require any inate abilities other than challenging your assumptions and getting good at breaking down a system into it's component pieces. By identifying the components that make up a system, you can get better at evaluating how those components interact with one another.  
 
 Practicing troubleshooting allows you to see patterns and areas that could be more likely to have faults. These could be things such as targeting software components that contain parsing free-form text because they frequently fail to account for certain character combinations. They could be testing that spark plugs are working correctly in an automotive engine first when a car cranks but won't start, because it's frequently either spark or fuel that is causing the problem.  
 
@@ -22,8 +20,8 @@ Practice is what builds expertise and troubleshooting skills are no different. I
 
 Below are a few key troubleshooting concepts that the best troubleshooters utilize in the normal course of doing their jobs.  
 
-* Identify Failure Condition(s)
-* Identifying and Removing Assumptions
+* Identify Failure Conditions
+* Identify and Remove Assumptions
 * Binary Search
 * Checkpoints
 
@@ -51,9 +49,19 @@ However, there are situations that you will encounter that the failure condition
 
 These examples show a consistent way of approaching inconsistent failure conditions. The presense of inconsistent conditions itself can point to potential areas to focus your troubleshooting efforts.  
 
-### Identifying and Removing Assumptions
+### Identify and Remove Assumptions
 
-One difficult concept to master is identifying and removing assumptions. This means finding areas of the system where your brain just glosses over as "that's impossible" or "can't be in that area." It's natural for us to think we know what areas are bulletproof and can't possibly be the problem. However, consistently, these areas are where we find the most frustrating and persistent bugs, specifically because they are the most overlooked areas.  
+Another very important concept is the ability to identify and remove assumptions. This means finding areas of the system where your brain just glosses over as "that's impossible" or "can't be in that area." It's natural for us to think we know what areas are bulletproof and can't possibly be the problem. However, consistently, these areas are where we find the most frustrating and persistent bugs, specifically because they are the most overlooked areas. Examples of that would be:  
+
+* Software systems
+  * The tests are all passing so that area of code can't be the problem.
+    * This assumes the tests are well-written and testing all relevant areas.
+  * Assuming an error code is being returned properly.
+    * Sometimes the problem is caused because the error code returned is not the one expected.
+* Automotive
+  * The car starts so the battery must be fine
+  * The battery dies after a few minutes, it must be a bad battery
+  * There is plenty of fuel so that can't be the problem
 
 It can be critically important to stop yourself from assuming _any_ part of the system is bulletproof.  
 
@@ -63,14 +71,13 @@ Those with experience in information technology may be familiar with the concept
 
 An easy example is in a cabling system such as cable television, network cabling, or electrical power. In all of these systems you have a point that can be identified as a 'start' and an 'end.'  
 
-Example:  
-An outlet in your bathroom no longer has power. If any other location in your house has power, you can consider the _system under test_ to start at the breaker box in your house and end at the bathroom outlet. In this scenario, the breaker box obviously has power because your house has power _somewhere_. You would first identify a location roughly halfway between the breaker box and the bathroom outlet, let's say a junction box in the ceiling. When you test the power in that junction box and find that the junction box has power. Since it has power the problem has to exist between that box and the outlet. The power is wired in series and runs through two other outlets before getting to the outlet that doesn't have power. When you check the outlet in the middle, you see that it has no power. Since it doesn't have power, the first outlet to be the next place to check. When you check the first outlet, you discover it has power. So the problem must exist in the line between the first two outlets or a defect in the second outlet itself.
+For example, an outlet in your bathroom no longer has power. If any other location in your house has power, you can consider the _system under test_ to start at the breaker box in your house and end at the bathroom outlet. In this scenario, the breaker box obviously has power because your house has power _somewhere_. You would first identify a location roughly halfway between the breaker box and the bathroom outlet, let's say a junction box in the ceiling. When you test the power in that junction box and find that the junction box has power. Since it has power the problem has to exist between that box and the outlet. The power is wired in series and runs through two other outlets before getting to the outlet that doesn't have power. When you check the outlet in the middle, you see that it has no power. Since it doesn't have power, the first outlet to be the next place to check. When you check the first outlet, you discover it has power. So the problem must exist in the line between the first two outlets or a defect in the second outlet itself.
 
 That's the power of the binary search. It becomes more and more valuable as the size and complexity of a system increases. Being able to quickly discard very large areas of a system as "not the problem" can save you considerable time.
 
 ### Checkpoints
 
-Checkpoints are very basic troubleshooting mechanisms. In software systems they can be reprented by breakpoints in a debugger, debugging messages logged to a file, or even messages popping up on the screen. In systems like automotive, cable television or computer networks, it could involve probes that read values at a given point in the system and show real-time readings. No matter what system, checkpoints provide a valuable insight into the state of the system at a given point in time and space.  
+Checkpoints are very basic troubleshooting mechanisms. In software systems they can be represented by breakpoints in a debugger, debugging messages logged to a file, or even messages popping up on the screen. In systems like automotive, cable television or computer networks, it could involve probes that read values at a given point in the system and show real-time readings. No matter what system, checkpoints provide a valuable insight into the state of the system at a given point in time and space.  
 
 ## Conclusion
 
