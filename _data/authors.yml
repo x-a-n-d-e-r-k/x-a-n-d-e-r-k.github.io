@@ -12,3 +12,6 @@ XanderK:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/x_a_n_d_e_r_k"
+    - label: "Mastadon"
+      icon: "fab fa-fw fa-mastodon"
+      url: "https://infosec.exchange/@xanderk"
